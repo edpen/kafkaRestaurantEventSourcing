@@ -1,7 +1,10 @@
 package customer.controllers;
 
-import customer.events.KafkaSender;
+import customer.domain.Tab;
+import customer.events.ParentEvent;
+import customer.events.TabClosed;
 import customer.events.TabCreated;
+import customer.recieverAndSender.Sender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,13 +16,21 @@ import java.util.UUID;
 @RequestMapping(value="/command/")
 public class CommandController {
     @Autowired
-    KafkaSender kafkaSender;
-
+    Sender sender;
 
 @PostMapping(value="/openTab")
-    public TabCreated openTab(){
-    TabCreated tab=new TabCreated(UUID.randomUUID());
-    kafkaSender.send(tab.toString());
+    public ParentEvent openTab(){
+    TabCreated tab=new TabCreated(/*UUID.randomUUID()*/);
+    //Tab tab=new Tab();
+    sender.send(tab);
     return tab;
 }
+    @PostMapping(value="/closeTab")
+    public ParentEvent closeTab(){
+        TabClosed tab=new TabClosed("close it");
+        //Tab tab=new Tab();
+        sender.send(tab);
+        return tab;
+    }
+
 }
